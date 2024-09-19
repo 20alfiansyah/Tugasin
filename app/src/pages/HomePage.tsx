@@ -1,4 +1,5 @@
 import Navbar from '../components/Navbar';
+import { Button } from '@/components/ui/button';
 const HomePage = () => {
   return (
     <>
@@ -6,7 +7,7 @@ const HomePage = () => {
         <Navbar />
       </nav>
       <main>
-        <h1>Home Page</h1>
+        <Button variant={'outline'}>haii</Button>
       </main>
     </>
   );
