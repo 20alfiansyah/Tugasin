@@ -26,7 +26,7 @@ function LoginPage() {
         variants={item}
         className="w-full h-full flex items-center justify-center font-Poppins"
       >
-        <Card className="w-full w-full py-7">
+        <Card className="w-full py-7">
           <CardHeader className="pt-6 pb-2">
             <CardTitle>
               <div className="flex items-center justify-center gap-2">
