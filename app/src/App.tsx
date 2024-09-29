@@ -21,7 +21,7 @@ function App() {
               element={<RouterGuard element={<RegisterPage />} isPublic />}
             />
             <Route
-              path="/home"
+              path="/home/*"
               element={<RouterGuard element={<HomePage />} />}
             />
           </Routes>

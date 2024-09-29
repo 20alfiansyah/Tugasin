@@ -1,60 +1,121 @@
 import { useEffect, useState } from 'react';
-import logoTugasin from '@/assets/logoTugasin.svg';
-
 import { useLocation } from 'react-router-dom';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/ThemeProvider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
+import {
   Drawer,
-  DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
   DrawerTrigger,
+  DrawerTitle,
 } from '@/components/ui/drawer';
 import {
   Squares2X2Icon,
   Square2StackIcon,
   Square3Stack3DIcon,
-  Cog6ToothIcon,
-  ArrowLeftEndOnRectangleIcon,
-  ChatBubbleBottomCenterTextIcon,
   CalendarDaysIcon,
+  Cog6ToothIcon,
+  ChatBubbleBottomCenterTextIcon,
+  ArrowLeftEndOnRectangleIcon,
   Bars3Icon,
-  SunIcon,
-  MoonIcon,
 } from '@heroicons/react/24/outline';
+import logoTugasin from '@/assets/logoTugasin.svg';
+import NavbarItem from '@/components/NavbarItem';
+import DarkModeSwitch from './DarkModeSwitch';
+import { Button } from '@/components/ui/button';
+
 const Navbar: React.FC<{ isDekstop: boolean }> = ({ isDekstop }) => {
   const location = useLocation();
   const { setTheme } = useTheme();
-  const [isDark, setDark] = useState(false);
+  const [isDark, setDark] = useState<boolean>(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme === 'dark';
+  });
 
   useEffect(() => {
     if (isDark) {
       setTheme('dark');
+      localStorage.setItem('theme', 'dark');
     } else {
       setTheme('light');
+      localStorage.setItem('theme', 'light');
     }
-  }, [isDark]);
+  }, [isDark, setTheme]);
+
+  const menuItems = [
+    { icon: Squares2X2Icon, label: 'Dashboard', path: '/home' },
+    {
+      icon: Square3Stack3DIcon,
+      label: 'Project',
+      path: '/home/project',
+      isCollapsible: true,
+      subItems: [
+        { label: 'Overview', path: '/home/project/overview' },
+        { label: 'Details', path: '/home/project/details' },
+      ],
+    },
+    { icon: Square2StackIcon, label: 'Task', path: '/home/task' },
+    { icon: CalendarDaysIcon, label: 'Calendar', path: '/home/calendar' },
+    { icon: Cog6ToothIcon, label: 'Settings', path: '/home/settings' },
+    {
+      icon: ChatBubbleBottomCenterTextIcon,
+      label: 'Help Center',
+      path: '/home/help',
+    },
+  ];
 
   return isDekstop ? (
-    <>
-      <div className="min-w-56 h-full bg-white p-4 rounded-xl">
-        <div className="w-full">
-          <img src={logoTugasin} alt="" />
-        </div>
+    <Card className="w-64 py-2 h-full flex flex-col justify-between  overflow-scroll">
+      <div>
+        <CardHeader className="font-Poppins">
+          <CardTitle>
+            <span className="flex gap-2 items-center">
+              <img src={logoTugasin} alt="Logo" className="w-10" />
+              Tugasin
+            </span>
+          </CardTitle>
+          <CardDescription>Manage your daily task</CardDescription>
+        </CardHeader>
+        <CardContent className="px-5 font-Poppins">
+          <div className="flex flex-col gap-2 h-full ">
+            <p className="font-semibold text-muted-foreground text-xs">Menu</p>
+            {menuItems.map((item) => (
+              <NavbarItem
+                key={item.path}
+                icon={item.icon}
+                label={item.label}
+                path={item.path}
+                isCollapsible={item.isCollapsible}
+                isActive={location.pathname === item.path}
+                subItems={item.subItems}
+              />
+            ))}
+          </div>
+        </CardContent>
       </div>
-    </>
+      <CardFooter className="flex flex-col items-start gap-4 font-Poppins">
+        <Button className="py-6 w-full border-0 flex gap-3 justify-start bg-transparent text-foreground text-xs shadow-none hover:bg-destructive/40">
+          <ArrowLeftEndOnRectangleIcon className="w-6 h-6" />
+          Log Out
+        </Button>
+        <DarkModeSwitch isDark={isDark} setDark={setDark} />
+      </CardFooter>
+    </Card>
   ) : (
     <Drawer direction="left">
       <div className="w-full flex justify-between items-center text-lg font-Poppins font-bold">
         <DrawerTrigger asChild>
           <Button variant={'outline'} size={'icon'}>
-            <Bars3Icon className="w-5 h-5"></Bars3Icon>
+            <Bars3Icon className="w-5 h-5" />
           </Button>
         </DrawerTrigger>
         <h1>Dashboard</h1>
@@ -65,90 +126,45 @@ const Navbar: React.FC<{ isDekstop: boolean }> = ({ isDekstop }) => {
           </Avatar>
         </Button>
       </div>
-      <DrawerContent>
+      <DrawerContent className="overflow-scroll">
         <div className="mx-auto w-full max-w-sm font-Poppins">
           <DrawerHeader>
             <DrawerTitle className="flex items-center justify-between gap-1 font-Poppins text-xl font-bold">
               <span className="flex gap-2">
-                <img src={logoTugasin} alt="" className="w-10" />
+                <img src={logoTugasin} alt="Logo" className="w-10" />
                 Tugasin
               </span>
-              <span>
-                <DrawerClose asChild>
-                  <Button variant={'outline'} size={'icon'}>
-                    <Bars3Icon className="w-5 h-5"></Bars3Icon>
-                  </Button>
-                </DrawerClose>
-              </span>
+              <DrawerTrigger asChild>
+                <Button variant={'outline'} size={'icon'}>
+                  <Bars3Icon className="w-5 h-5" />
+                </Button>
+              </DrawerTrigger>
             </DrawerTitle>
-            <DrawerDescription className="flex justify-start">
-              Manage your daily task
-            </DrawerDescription>
           </DrawerHeader>
-          <div className=" flex flex-col gap-4 h-full  px-4">
-            <div className="flex flex-col gap-1">
-              <p className="font-semibold text-muted-foreground text-sm">
-                Menu
-              </p>
-              <Button
-                className={`py-6 border-0 flex gap-3 justify-start bg-transparent text-foreground text-sm shadow-none hover:bg-primary/20 ${location.pathname === '/home' ? 'font-bold text-primary bg-primary/20' : ''}`}
-              >
-                <Squares2X2Icon className="w-6 h-6 " />
-                Dashboard
-              </Button>
-              <Button
-                className={`py-6 border-0 flex gap-3 justify-start bg-transparent text-foreground text-sm shadow-none hover:bg-primary/20 ${location.pathname === '/todaytask' ? 'font-bold text-primary bg-primary/20' : ''}`}
-              >
-                <Square2StackIcon className="w-6 h-6" />
-                Today Task
-              </Button>
-              <Button
-                className={`py-6 border-0 flex gap-3 justify-start bg-transparent text-foreground text-sm shadow-none hover:bg-primary/20 ${location.pathname === '/alltask' ? 'font-bold text-primary bg-primary/20' : ''}`}
-              >
-                <Square3Stack3DIcon className="w-6 h-6" />
-                All Task
-              </Button>
-              <Button
-                className={`py-6 border-0 flex gap-3 justify-start bg-transparent text-foreground text-sm shadow-none hover:bg-primary/20 ${location.pathname === '/calendar' ? 'font-bold text-primary bg-primary/20' : ''}`}
-              >
-                <CalendarDaysIcon className="w-6 h-6" />
-                Calendar
-              </Button>
-              <Button
-                className={`py-6 border-0 flex gap-3 justify-start bg-transparent text-foreground text-sm shadow-none hover:bg-primary/20 ${location.pathname === '/settings' ? 'font-bold text-primary bg-primary/20' : ''}`}
-              >
-                <Cog6ToothIcon className="w-6 h-6" />
-                Settings
-              </Button>
-              <Button
-                className={`py-6 border-0 flex gap-3 justify-start bg-transparent text-foreground text-sm shadow-none hover:bg-primary/20 ${location.pathname === '/help' ? 'font-bold text-primary bg-primary/20' : ''}`}
-              >
-                <ChatBubbleBottomCenterTextIcon className="w-6 h-6" />
-                Help Center
-              </Button>
-            </div>
-            <div className="flex flex-col gap-1"></div>
+          <div className="flex flex-col gap-2 h-full px-4">
+            {menuItems.map((item) => (
+              <NavbarItem
+                key={item.path}
+                icon={item.icon}
+                label={item.label}
+                path={item.path}
+                isCollapsible={item.isCollapsible}
+                isActive={location.pathname === item.path}
+                subItems={item.subItems}
+              />
+            ))}
           </div>
         </div>
-        <DrawerFooter>
-          <Button
-            className={`py-6 border-0 flex gap-3 justify-start bg-transparent text-foreground text-sm shadow-none hover:bg-destructive/40`}
-          >
+        <DrawerFooter className="flex flex-col gap-2 font-Poppins">
+          <Button className="py-5 w-full border-0 flex gap-3 justify-start bg-transparent text-foreground text-xs shadow-none hover:bg-destructive/40">
             <ArrowLeftEndOnRectangleIcon className="w-6 h-6" />
             Log Out
           </Button>
-          <div className="flex items-center gap-3 px-4 justify-between">
-            <div className="flex gap-3">
-              <SunIcon className="w-6 h-6" />
-              <label htmlFor="" className="font-semibold text-sm">
-                Dark Mode
-              </label>
-            </div>
-            <Switch checked={isDark} onCheckedChange={setDark} />
-          </div>
+          <DarkModeSwitch isDark={isDark} setDark={setDark} />
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
 };
+
 export default Navbar;
